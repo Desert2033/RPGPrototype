@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 
 public class LoadLevelState : IPayloadedState<string>
 {
-    private readonly GameStateMachine _stateMachine;
+    private readonly IGameStateMachine _stateMachine;
     private readonly SceneLoader _sceneLoader;
     private readonly LoadingCurtain _curtain;
     private readonly IGameFactory _gameFactory;
@@ -14,7 +14,7 @@ public class LoadLevelState : IPayloadedState<string>
     private readonly IStaticDataService _staticData;
     private readonly IUIFactory _uiFactory;
 
-    public LoadLevelState(GameStateMachine stateMachine,
+    public LoadLevelState(IGameStateMachine stateMachine,
         SceneLoader sceneLoader,
         LoadingCurtain curtain,
         IGameFactory gameFactory,

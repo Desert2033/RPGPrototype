@@ -5,7 +5,7 @@ using Source.Root.Services;
 using Source.Root;
 using Root.Services.PersistentProgress;
 
-public class GameStateMachine 
+public class GameStateMachine : IGameStateMachine
 {
     private readonly Dictionary<Type, IExistableState> _states;
     private IExistableState _activeState;
@@ -16,24 +16,24 @@ public class GameStateMachine
         {
             [typeof(BootstrapState)] = new BootstrapState(this, sceneLoader, services),
             [typeof(LoadLevelState)] = new LoadLevelState(
-                this, 
-                sceneLoader, 
-                curtain, 
+                this,
+                sceneLoader,
+                curtain,
                 services.Single<IGameFactory>(),
                 services.Single<IPersistentProgressService>(),
                 services.Single<IStaticDataService>(),
                 services.Single<IUIFactory>()),
             [typeof(LoadProgressState)] = new LoadProgressState(
-                this, 
-                services.Single<IPersistentProgressService>(), 
+                this,
+                services.Single<IPersistentProgressService>(),
                 services.Single<ISaveLoadService>()),
             [typeof(GameLoopState)] = new GameLoopState(this),
         };
     }
 
-    private TState GetState<TState>() where TState : class, IExistableState => 
+    private TState GetState<TState>() where TState : class, IExistableState =>
         _states[typeof(TState)] as TState;
-    
+
     private TState ChangeState<TState>() where TState : class, IExistableState
     {
         _activeState?.Exit();
@@ -51,7 +51,7 @@ public class GameStateMachine
 
     public void Enter<TState, TPayload>(TPayload payload) where TState : class, IPayloadedState<TPayload>
     {
-        TState state  = ChangeState<TState>();
+        TState state = ChangeState<TState>();
         state.Enter(payload);
     }
 }

@@ -124,6 +124,17 @@ namespace Source.Root
             return lootPiece;
         }
         
+        public void CreateSpawner(Vector3 at, string spawnerId, MonsterTypeId monsterTypeId)
+        {
+            SpawnPoint spawner = InstantiateRegistered(AssetPath.Spawner, at)
+                .GetComponent<SpawnPoint>();
+
+            spawner.Construct(this);
+
+            spawner.Id = spawnerId;
+            spawner.MonsterTypeId = monsterTypeId;
+        }
+        
         public void Cleanup()
         {
             ProgressReaders.Clear();
@@ -136,17 +147,6 @@ namespace Source.Root
                 ProgressWriters.Add(progressWriter);
 
             ProgressReaders.Add(progressReader);
-        }
-
-        public void CreateSpawner(Vector3 at, string spawnerId, MonsterTypeId monsterTypeId)
-        {
-            SpawnPoint spawner = InstantiateRegistered(AssetPath.Spawner, at)
-                .GetComponent<SpawnPoint>();
-
-            spawner.Construct(this);
-
-            spawner.Id = spawnerId;
-            spawner.MonsterTypeId = monsterTypeId;
         }
     }
 }
