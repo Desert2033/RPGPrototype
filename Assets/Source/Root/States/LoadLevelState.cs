@@ -3,13 +3,9 @@ using Source.Logic;
 using Source.Root;
 using Root.Services.PersistentProgress;
 using UnityEngine.SceneManagement;
-using System;
 
 public class LoadLevelState : IPayloadedState<string>
 {
-    private const string InitialPointTag = "InitialPoint";
-    private const string EnemySpawnerTag = "EnemySpawner";
-
     private readonly GameStateMachine _stateMachine;
     private readonly SceneLoader _sceneLoader;
     private readonly LoadingCurtain _curtain;
@@ -57,20 +53,23 @@ public class LoadLevelState : IPayloadedState<string>
 
     private void InitGameWorld()
     {
-        InitSpawners();
+        LevelStaticData levelData = InitLevelStaticData();
 
-        GameObject hero = _gameFactory.CreateHero(GameObject.FindWithTag(InitialPointTag));
-        
+        GameObject hero = InitHero(levelData.InitialHeroPosition);
+
+        InitSpawners(levelData);
         InitHud(hero);
-
         CameraFollow(hero);
     }
 
-    private void InitSpawners()
-    {
-        string sceneKey = SceneManager.GetActiveScene().name;
-        LevelStaticData levelData = _staticData.ForLevel(sceneKey);
+    private LevelStaticData InitLevelStaticData() => 
+        _staticData.ForLevel(SceneManager.GetActiveScene().name);
 
+    private GameObject InitHero(Vector3 at) =>
+        _gameFactory.CreateHero(at: at);
+
+    private void InitSpawners(LevelStaticData levelData)
+    {
         foreach (EnemySpawnerData spawnerData in levelData.EnemySpawners)
         {
             _gameFactory.CreateSpawner(spawnerData.Position, spawnerData.Id, spawnerData.MonsterTypeId);

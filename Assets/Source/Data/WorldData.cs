@@ -13,6 +13,7 @@ namespace Source.Data
         public WorldData(string intialLevel)
         {
             PositionOnLevel = new PositionOnLevel(intialLevel);
+            LootData = new LootData();
         }
     }
 }

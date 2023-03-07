@@ -12,7 +12,7 @@ namespace Source.Root
         public void Cleanup();
         public void CreateSpawner(Vector3 at, string spawnerId, MonsterTypeId monsterTypeId);
         public GameObject CreateHud();
-        public GameObject CreateHero(GameObject at);
+        public GameObject CreateHero(Vector3 at);
         public GameObject CreateMonster(MonsterTypeId monsterTypeId, Transform parent);
         public LootPiece CreateLoot();
     }
