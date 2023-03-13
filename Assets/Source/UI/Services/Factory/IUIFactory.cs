@@ -1,7 +1,8 @@
 ﻿using Source.Root.Services;
+using System.Threading.Tasks;
 
 public interface IUIFactory : IService
 {
     public void CreateShop();
-    public void CreateUIRoot();
+    public Task CreateUIRoot();
 }

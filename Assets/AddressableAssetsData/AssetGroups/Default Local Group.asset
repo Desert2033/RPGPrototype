@@ -16,7 +16,35 @@ MonoBehaviour:
   m_Data:
     m_SerializedData: []
   m_GUID: b1742ffdacfca5245b9e7a2d09e3ced3
-  m_SerializeEntries: []
+  m_SerializeEntries:
+  - m_GUID: fef8ee76ba818f84b81b11da6bda5ddf
+    m_Address: Golem
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 7c227aa1eec7f2346b3c72ae9d2d0035
+    m_Address: Lich
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: d587ba2fd38b20449986c007d26d2b8a
+    m_Address: Loot
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 53da9bad7004dd0479fa0a2afcc9f59d
+    m_Address: SpawnPoint
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 181862a89f60d7a459002f9870860ad4
+    m_Address: Hero
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: f6395af14c6ae2d4ea00c7e97e633ad3
+    m_Address: Hud
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+  - m_GUID: 71a3196c092b3e440953ea19a4546bd8
+    m_Address: UIRoot
+    m_ReadOnly: 0
+    m_SerializedLabels: []
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: 17338822b83f5af4b848c1e75f3c32fe, type: 2}
   m_SchemaSet:

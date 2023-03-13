@@ -32,11 +32,11 @@ public class BootstrapState : IState
     {
         RegisterAdsService();
         RegisterStaticData();
+        RegisterAssetProvider();
 
         _services.RegisterSingle<IGameStateMachine>(_stateMachine);
         _services.RegisterSingle<IRandomService>(new RandomService());
         _services.RegisterSingle<IInputService>(InputService());
-        _services.RegisterSingle<IAssets>(new AssetProvider());
         _services.RegisterSingle<IPersistentProgressService>(new PersistentProgressService());
 
         _services.RegisterSingle<IUIFactory>(new UIFactory(
@@ -58,6 +58,15 @@ public class BootstrapState : IState
                 _services.Single<IPersistentProgressService>(),
                 _services.Single<IGameFactory>()));
 
+    }
+
+    private void RegisterAssetProvider()
+    {
+        AssetProvider assetProvider = new AssetProvider();
+
+        assetProvider.Init();
+
+        _services.RegisterSingle<IAssets>(assetProvider);
     }
 
     private void RegisterAdsService()

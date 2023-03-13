@@ -1,10 +1,11 @@
 ﻿using Root.Services.PersistentProgress;
 using Source.Root.AssetManagement;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class UIFactory : IUIFactory
 {
-    private const string UIRootPath = "UI/UIRoot";
+    private const string UIRootPath = "UIRoot";
 
     private readonly IAssets _assets;
 
@@ -33,6 +34,9 @@ public class UIFactory : IUIFactory
         shopWindow.Construct(_adsService , _progressService);
     }
 
-    public void CreateUIRoot() => 
-        _uiRoot = _assets.Instantiate(UIRootPath).transform;
+    public async Task CreateUIRoot()
+    {
+        GameObject root = await _assets.Instantiate(UIRootPath);
+        _uiRoot = root.transform;
+    }
 }

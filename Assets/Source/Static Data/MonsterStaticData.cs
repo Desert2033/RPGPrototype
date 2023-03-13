@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 [CreateAssetMenu(fileName = "MonsterData", menuName = "StaticData/Monster")]
 public class MonsterStaticData : ScriptableObject
@@ -23,5 +24,5 @@ public class MonsterStaticData : ScriptableObject
     [Range(1f, 100f)]
     public float MoveSpeed;
     
-    public GameObject Prefab;
+    public AssetReferenceGameObject PrefabReference;
 }

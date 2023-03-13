@@ -1,6 +1,7 @@
 ﻿using Root.Services.PersistentProgress;
 using Source.Root.AssetManagement;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -15,7 +16,6 @@ namespace Source.Root
         private readonly IWindowService _windowService;
 
         public List<ISavedProgressReader> ProgressReaders { get; } = new List<ISavedProgressReader>();
-        
         public List<ISavedProgress> ProgressWriters { get; } = new List<ISavedProgress>();
 
         private GameObject _heroGameObject;
@@ -24,7 +24,7 @@ namespace Source.Root
             IAssets assetProvider,
             IStaticDataService staticData,
             IRandomService random,
-            IPersistentProgressService progressService, 
+            IPersistentProgressService progressService,
             IWindowService windowService)
         {
             _assetProvider = assetProvider;
@@ -45,31 +45,45 @@ namespace Source.Root
                 Register(progressReader);
             }
         }
-        
-        private GameObject InstantiateRegistered(string prefabPath, Vector3 at)
+
+        private async Task<GameObject> InstantiateRegisteredAsync(string prefabPath, Vector3 at)
         {
-            GameObject gameObject = _assetProvider.Instantiate(prefabPath, at: at);
-            RegisterProgressWatchers(gameObject);
-            return gameObject;
-        }
-       
-        private GameObject InstantiateRegistered(string prefabPath)
-        {
-            GameObject gameObject = _assetProvider.Instantiate(prefabPath);
+            GameObject gameObject = await _assetProvider.Instantiate(prefabPath, at: at);
             RegisterProgressWatchers(gameObject);
             return gameObject;
         }
 
-        public GameObject CreateHero(Vector3 at)
+        private async Task<GameObject> InstantiateRegisteredAsync(string prefabPath)
         {
-            _heroGameObject = InstantiateRegistered(AssetPath.HeroPath, at);
+            GameObject gameObject = await _assetProvider.Instantiate(prefabPath);
+            RegisterProgressWatchers(gameObject);
+            return gameObject;
+        }
+        
+        private GameObject InstantiateRegistered(GameObject prefab, Vector3 at)
+        {
+            GameObject gameObject = Object.Instantiate(prefab, at, Quaternion.identity);
+            RegisterProgressWatchers(gameObject);
+            return gameObject;
+        }
+        
+        private GameObject InstantiateRegistered(GameObject prefab)
+        {
+            GameObject gameObject = Object.Instantiate(prefab);
+            RegisterProgressWatchers(gameObject);
+            return gameObject;
+        }
+
+        public async Task<GameObject> CreateHero(Vector3 at)
+        {
+            _heroGameObject = await InstantiateRegisteredAsync(AssetAddress.HeroPath, at);
 
             return _heroGameObject;
         }
 
-        public GameObject CreateHud()
+        public async Task<GameObject> CreateHud()
         {
-            GameObject hud = InstantiateRegistered(AssetPath.HudPath);
+            GameObject hud = await InstantiateRegisteredAsync(AssetAddress.HudPath);
 
             hud.GetComponentInChildren<LootCounter>().
                 Construct(_progressService.Progress.WorldData);
@@ -82,16 +96,30 @@ namespace Source.Root
             return hud;
         }
 
-        public GameObject CreateMonster(MonsterTypeId typeId, Transform parent)
+        public async Task<LootPiece> CreateLoot()
+        {
+            GameObject prefab = await _assetProvider.Load<GameObject>(AssetAddress.Loot);
+
+            LootPiece lootPiece = InstantiateRegistered(prefab).GetComponent<LootPiece>();
+
+            lootPiece.Construct(_progressService.Progress.WorldData);
+
+            return lootPiece;
+        }
+
+        public async Task<GameObject> CreateMonster(MonsterTypeId typeId, Transform parent)
         {
             MonsterStaticData monsterData = _staticData.ForMonster(typeId);
+
+            GameObject prefab = await _assetProvider.Load<GameObject>(monsterData.PrefabReference);
+
             GameObject monster = GameObject.Instantiate(
-                    monsterData.Prefab, 
-                    parent.position, 
-                    Quaternion.identity, 
+                    prefab,
+                    parent.position,
+                    Quaternion.identity,
                     parent);
-            
-            var health = monster.GetComponent<IHealth>();
+
+            IHealth health = monster.GetComponent<IHealth>();
             health.Current = monsterData.Hp;
             health.Max = monsterData.Hp;
 
@@ -106,7 +134,7 @@ namespace Source.Root
             lootSpawner.SetLoot(monsterData.MinLoot, monsterData.MaxLoot);
             lootSpawner.Construct(this, _random);
 
-            var attack = monster.GetComponent<Attack>();
+            Attack attack = monster.GetComponent<Attack>();
             attack.Construct(_heroGameObject.transform);
             attack.Damage = monsterData.Damage;
             attack.Cleavage = monsterData.Cleavage;
@@ -115,18 +143,11 @@ namespace Source.Root
             return monster;
         }
 
-        public LootPiece CreateLoot()
+        public async Task CreateSpawner(Vector3 at, string spawnerId, MonsterTypeId monsterTypeId)
         {
-            var lootPiece = InstantiateRegistered(AssetPath.Loot).GetComponent<LootPiece>();
+            GameObject prefab = await _assetProvider.Load<GameObject>(AssetAddress.Spawner);
 
-            lootPiece.Construct(_progressService.Progress.WorldData);
-
-            return lootPiece;
-        }
-        
-        public void CreateSpawner(Vector3 at, string spawnerId, MonsterTypeId monsterTypeId)
-        {
-            SpawnPoint spawner = InstantiateRegistered(AssetPath.Spawner, at)
+            SpawnPoint spawner = InstantiateRegistered(prefab, at)
                 .GetComponent<SpawnPoint>();
 
             spawner.Construct(this);
@@ -134,19 +155,27 @@ namespace Source.Root
             spawner.Id = spawnerId;
             spawner.MonsterTypeId = monsterTypeId;
         }
-        
+
         public void Cleanup()
         {
             ProgressReaders.Clear();
             ProgressWriters.Clear();
+
+            _assetProvider.CleanUpHandles();
         }
-        
+
         public void Register(ISavedProgressReader progressReader)
         {
             if (progressReader is ISavedProgress progressWriter)
                 ProgressWriters.Add(progressWriter);
 
             ProgressReaders.Add(progressReader);
+        }
+
+        public async Task WarmUp()
+        {
+            await _assetProvider.Load<GameObject>(AssetAddress.Loot);
+            await _assetProvider.Load<GameObject>(AssetAddress.Spawner);
         }
     }
 }

@@ -24,9 +24,9 @@ public class SpawnPoint : MonoBehaviour, ISavedProgress
             Spawn();
     }
 
-    private void Spawn()
+    private async void Spawn()
     {
-        var monster = _gameFactory.CreateMonster(MonsterTypeId, transform);
+        var monster = await _gameFactory.CreateMonster(MonsterTypeId, transform);
         _enemyDeath = monster.GetComponent<EnemyDeath>();
         _enemyDeath.Happened += Slay;
     }
