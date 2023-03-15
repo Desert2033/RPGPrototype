@@ -64,9 +64,6 @@ public class LoadLevelState : IPayloadedState<string>
         CameraFollow(hero);
     }
 
-    private LevelStaticData InitLevelStaticData() => 
-        _staticData.ForLevel(SceneManager.GetActiveScene().name);
-
     private async Task<GameObject> InitHero(Vector3 at) =>
         await _gameFactory.CreateHero(at: at);
 
@@ -84,6 +81,9 @@ public class LoadLevelState : IPayloadedState<string>
 
         hud.GetComponentInChildren<ActorUI>().Construct(hero.GetComponent<HeroHealth>());
     }
+
+    private LevelStaticData InitLevelStaticData() => 
+        _staticData.ForLevel(SceneManager.GetActiveScene().name);
 
     private void CameraFollow(GameObject hero) => 
         Camera.main.GetComponent<CameraFollow>().Follow(hero);
