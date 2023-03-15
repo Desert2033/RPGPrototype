@@ -39,11 +39,15 @@ public class BootstrapState : IState
         _services.RegisterSingle<IInputService>(InputService());
         _services.RegisterSingle<IPersistentProgressService>(new PersistentProgressService());
 
+        RegisterIAPService(new IAPProvider(), _services.Single<IPersistentProgressService>());
+
         _services.RegisterSingle<IUIFactory>(new UIFactory(
             _services.Single<IAssets>(),
             _services.Single<IStaticDataService>(),
             _services.Single<IPersistentProgressService>(),
-            _services.Single<IAdsService>()));
+            _services.Single<IAdsService>(),
+            _services.Single<IIAPService>()
+            ));
 
         _services.RegisterSingle<IWindowService>(new WindowService(_services.Single<IUIFactory>()));
 
@@ -57,7 +61,6 @@ public class BootstrapState : IState
         _services.RegisterSingle<ISaveLoadService>(new SaveLoadService(
                 _services.Single<IPersistentProgressService>(),
                 _services.Single<IGameFactory>()));
-
     }
 
     private void RegisterAssetProvider()
@@ -76,6 +79,13 @@ public class BootstrapState : IState
         _services.RegisterSingle<IAdsService>(adsSevice);
     }
 
+    private void RegisterIAPService(IAPProvider iapProvider, IPersistentProgressService progressService)
+    {
+        IIAPService iapSevice = new IAPService(iapProvider, progressService);
+        iapSevice.Init();
+        _services.RegisterSingle<IIAPService>(iapSevice);
+    }
+
     private void RegisterStaticData()
     {
         IStaticDataService staticData = new StaticDataService();
@@ -83,18 +93,18 @@ public class BootstrapState : IState
         _services.RegisterSingle<IStaticDataService>(staticData);
     }
 
-    public void Enter() => 
-        _sceneLoader.Load(Initial, onLoaded: EnterLoadLevel);
-
-    public void Exit()
-    {
-    }
-
-    public static IInputService InputService()
+    private IInputService InputService()
     {
         if (Application.isEditor)
             return new StandaloneInputService();
         else
             return new MobileInputService();
+    }
+
+    public void Enter() => 
+        _sceneLoader.Load(Initial, onLoaded: EnterLoadLevel);
+
+    public void Exit()
+    {
     }
 }

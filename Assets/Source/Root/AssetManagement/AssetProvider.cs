@@ -44,6 +44,9 @@ namespace Source.Root.AssetManagement
         public Task<GameObject> Instantiate(string address, Vector3 at) =>
             Addressables.InstantiateAsync(address, at, Quaternion.identity).Task;
 
+        public Task<GameObject> Instantiate(string address, Transform parent) =>
+            Addressables.InstantiateAsync(address, parent).Task;
+
         public async Task<T> Load<T>(AssetReferenceGameObject prefabReference) where T : class
         {
             if (_completedCache.TryGetValue(prefabReference.AssetGUID, out AsyncOperationHandle completedHandle))

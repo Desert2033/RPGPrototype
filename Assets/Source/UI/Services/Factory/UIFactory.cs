@@ -8,21 +8,24 @@ public class UIFactory : IUIFactory
     private const string UIRootPath = "UIRoot";
 
     private readonly IAssets _assets;
+    private readonly IStaticDataService _staticData;
+    private readonly IPersistentProgressService _progressService;
+    private readonly IAdsService _adsService;
+    private readonly IIAPService _iapService;
 
     private Transform _uiRoot;
-    private IStaticDataService _staticData;
-    private IPersistentProgressService _progressService;
-    private IAdsService _adsService;
 
     public UIFactory(IAssets assets,
         IStaticDataService staticData,
-        IPersistentProgressService progressService, 
-        IAdsService adsService)
+        IPersistentProgressService progressService,
+        IAdsService adsService, 
+        IIAPService iapService)
     {
         _assets = assets;
         _staticData = staticData;
         _progressService = progressService;
         _adsService = adsService;
+        _iapService = iapService;
     }
 
     public void CreateShop()
@@ -31,7 +34,7 @@ public class UIFactory : IUIFactory
 
         ShopWindow shopWindow = Object.Instantiate(config.Prefab, _uiRoot) as ShopWindow;
 
-        shopWindow.Construct(_adsService , _progressService);
+        shopWindow.Construct(_adsService , _progressService, _iapService, _assets);
     }
 
     public async Task CreateUIRoot()

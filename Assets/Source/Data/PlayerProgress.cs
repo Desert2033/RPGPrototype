@@ -9,6 +9,7 @@ namespace Source.Data
         public WorldData WorldData;
         public Stats HeroStats;
         public KillData KillData;
+        public PurchaseData PurchaseData;
 
         public PlayerProgress(string intialLevel)
         {
@@ -16,6 +17,7 @@ namespace Source.Data
             HeroState = new State();
             HeroStats = new Stats();
             KillData = new KillData();
+            PurchaseData = new PurchaseData();
         }
     }
 }

@@ -7,6 +7,8 @@ using UnityEngine.SceneManagement;
 
 public class HeroMove : MonoBehaviour, ISavedProgress
 {
+    private const float Epsilon = 0.001f;
+
     [SerializeField] private CharacterController _characterController;
     [SerializeField]private float _movespeed;
     
@@ -27,7 +29,7 @@ public class HeroMove : MonoBehaviour, ISavedProgress
     {
         Vector3 movementVector = Vector3.zero;
         
-        if(_inputService.Axis.sqrMagnitude > Constants.Epsilon)
+        if(_inputService.Axis.sqrMagnitude > Epsilon)
         {
             movementVector = _camera.transform.TransformDirection(_inputService.Axis);
             movementVector.y = 0;
